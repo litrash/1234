@@ -1,28 +1,11 @@
-FROM node:18-alpine
-
-# Docker buildx 自动注入，无需手动传入
-ARG TARGETARCH
-
+FROM alpine:latest
+RUN apk add --no-cache wget tar
 WORKDIR /app
-
-# 安装 cloudflared 及其依赖，根据目标架构选择对应二进制
-RUN apk add --no-cache curl ca-certificates tzdata && \
-    case "${TARGETARCH}" in \
-      arm64) ARCH="arm64" ;; \
-      arm)   ARCH="arm" ;; \
-      *)     ARCH="amd64" ;; \
-    esac && \
-    curl -L "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}" \
-    -o /usr/local/bin/cloudflared \
-    && chmod +x /usr/local/bin/cloudflared
-
-COPY package*.json ./
-RUN npm ci
-
-COPY . .
-
-# 使用 shell 脚本启动服务
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
-
-CMD ["/app/start.sh"] 
+# 下载 sing-box 官方程序
+RUN wget https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-linux-amd64.tar.gz && \
+    tar -zxvf sing-box-1.10.1-linux-amd64.tar.gz && \
+    mv sing-box-1.10.1-linux-amd64/sing-box . && \
+    rm -rf sing-box-1.10.1-linux-amd64*
+COPY config.json .
+EXPOSE 8080
+CMD ["./sing-box", "run", "-c", "config.json"]

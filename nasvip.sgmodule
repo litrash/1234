@@ -1,0 +1,8 @@
+#!name=磁力宅智存 会员态
+#!desc=改写 user/get_user_status_big 响应，使客户端判定为最高会员（本地能力生效：倍速/去广告/付费墙/身份显示）。资源型权益仍由服务端签发。
+
+[Script]
+http-response ^https:\/\/xiaozhai-v1\.miao2023\.cc\/nas_api\/user\/get_user_status_big script-path=https://raw.githubusercontent.com/USER/REPO/main/nasvip.js, requires-body=1, timeout=30, tag=磁力宅-会员态
+
+[MitM]
+hostname = %APPEND% xiaozhai-v1.miao2023.cc
